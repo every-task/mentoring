@@ -5,6 +5,7 @@ import com.playdata.domain.member.repository.MemberRepository;
 import com.playdata.domain.mentoring.entity.Mentoring;
 import com.playdata.domain.mentoring.entity.MentoringStatus;
 import com.playdata.domain.mentoring.repository.MentoringRepository;
+import com.playdata.exception.MemberNotFoundException;
 import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -51,6 +52,6 @@ public class MentoringService {
 
     private Member findMemberById(UUID memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new EntityNotFoundException("Member not found"));
+                .orElseThrow(() -> new MemberNotFoundException("Member not found"));
     }
 }
