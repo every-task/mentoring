@@ -1,15 +1,14 @@
 package com.playdata.mentoring.controller;
 
 import com.playdata.config.TokenInfo;
+import com.playdata.domain.member.entity.Member;
 import com.playdata.domain.mentoring.response.MentoringRequest;
 import com.playdata.mentoring.service.MentoringService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -39,5 +38,15 @@ public class MentoringController {
     @PostMapping("/reject")
     public void rejectMentoringRequest(@RequestBody UUID mentorId, UUID menteeId) {
         mentoringService.rejectRequest(mentorId, menteeId);
+    }
+    //멘티 목록 불러오기
+    @GetMapping("/mentees")
+    public List<Member> getMenteesForMentor(@AuthenticationPrincipal TokenInfo tokenInfo) {
+        return mentoringService.getMenteesForMentor(tokenInfo.getId());
+    }
+    //멘토 목록 불러오기
+    @GetMapping("/mentors")
+    public List<Member> getMentorsForMentee(@AuthenticationPrincipal TokenInfo tokenInfo) {
+        return mentoringService.getMentorsForMentee(tokenInfo.getId());
     }
 }
