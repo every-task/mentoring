@@ -9,6 +9,6 @@ import java.util.UUID;
 
 public interface MentoringRepository extends JpaRepository<Mentoring, Long> {
     Optional<Mentoring> findByMentorIdAndMenteeId(UUID mentorId, UUID menteeId);
-    List<Mentoring> findByMentorId(UUID mentorId);
-    List<Mentoring> findByMenteeId(UUID menteeId);
+    List<Mentoring> findMenteesByMentorId(UUID mentorId);
+    List<Mentoring> findMentorsByMenteeId(UUID menteeId);
 }
