@@ -29,7 +29,7 @@ public class MentoringService {
         Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(menteeId, mentorId);
         if (existRequest.isPresent()) {
             throw new MentoringRequestNotAllowedException("Mentoring request already exists.");
-        } else {
+        }
             Mentoring mentoring = Mentoring.builder()
                     .mentee(findMemberById(menteeId))
                     .mentor(findMemberById(mentorId))
@@ -37,8 +37,6 @@ public class MentoringService {
                     .build();
             mentoringRepository.save(mentoring);
         }
-
-    }
 
     // 멘토링 요청을 수락한다
     public void acceptRequest(UUID mentorId, UUID menteeId) {
