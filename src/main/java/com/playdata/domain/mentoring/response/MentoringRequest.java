@@ -6,5 +6,6 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class MentoringRequest {
-    private String toMemberId;
+    private String mentorId;
+    private String menteeId;
 }
