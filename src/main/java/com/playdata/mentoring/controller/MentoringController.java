@@ -21,23 +21,26 @@ public class MentoringController {
 
     // 멘토링 요청 보내기
     @PostMapping("/request")
-    public void sendMentoringRequest(
-            @AuthenticationPrincipal TokenInfo tokenInfo,
-            @RequestBody MentoringRequest request) {
-
-        mentoringService.sendRequest(tokenInfo.getId(), UUID.fromString(request.getToMemberId()));
+    public void sendMentoringRequest(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                     @RequestBody MentoringRequest request) {
+        mentoringService.sendRequest(
+                tokenInfo.getId(), UUID.fromString(request.getMentorId()));
     }
 
     // 멘토링 요청 수락
     @PostMapping("/accept")
-    public void acceptMentoringRequest(@RequestBody UUID mentorId, UUID menteeId) {
-        mentoringService.acceptRequest(mentorId, menteeId);
+    public void acceptMentoringRequest(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                       @RequestBody MentoringRequest request) {
+        mentoringService.acceptRequest(
+                tokenInfo.getId(), UUID.fromString(request.getMenteeId()));
     }
 
     // 멘토링 요청 거절
     @PostMapping("/reject")
-    public void rejectMentoringRequest(@RequestBody UUID mentorId, UUID menteeId) {
-        mentoringService.rejectRequest(mentorId, menteeId);
+    public void rejectMentoringRequest(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                       @RequestBody MentoringRequest request) {
+        mentoringService.rejectRequest(
+                tokenInfo.getId(), UUID.fromString(request.getMenteeId()));
     }
     //멘티 목록 불러오기
     @GetMapping("/mentees")

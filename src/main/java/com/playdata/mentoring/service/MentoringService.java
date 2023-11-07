@@ -6,6 +6,7 @@ import com.playdata.domain.mentoring.entity.Mentoring;
 import com.playdata.domain.mentoring.entity.MentoringStatus;
 import com.playdata.domain.mentoring.repository.MentoringRepository;
 import com.playdata.exception.MemberNotFoundException;
+import com.playdata.exception.MentoringRequestNotAllowedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -22,21 +23,20 @@ public class MentoringService {
     private final MentoringRepository mentoringRepository;
     private final MemberRepository memberRepository;
 
-    // 예를 들어 front에서 멘토링 신청을 누른 memberId는 fromMemberId가 된다
-    //  멘토링 요청을 받은 memberId는 toMemberId가 된다
-    // 각각의 id를 back에서 전달 받고 요청을 보내고 처음 상태는 PENDING 상태로 저장이 된다
-    public void sendRequest(UUID fromMemberId, UUID toMemberId) {
 
-        Member fromMember = findMemberById(fromMemberId);
-        Member toMember = findMemberById(toMemberId);
+    public void sendRequest(UUID menteeId, UUID mentorId) {
 
-        Mentoring mentoring = Mentoring.builder()
-                .mentee(fromMember)
-                .mentor(toMember)
-                .status(MentoringStatus.PENDING)
-                .build();
-        mentoringRepository.save(mentoring);
-    }
+        Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(menteeId, mentorId);
+        if (existRequest.isPresent()) {
+            throw new MentoringRequestNotAllowedException("Mentoring request already exists.");
+        }
+            Mentoring mentoring = Mentoring.builder()
+                    .mentee(findMemberById(menteeId))
+                    .mentor(findMemberById(mentorId))
+                    .status(MentoringStatus.PENDING)
+                    .build();
+            mentoringRepository.save(mentoring);
+        }
 
     // 멘토링 요청을 수락한다
     public void acceptRequest(UUID mentorId, UUID menteeId) {
@@ -46,7 +46,7 @@ public class MentoringService {
         mentoringRepository.save(mentoring);
     }
 
-//    //멘토링 요청을 거절한다
+    //멘토링 요청을 거절한다
     public void rejectRequest(UUID mentorId, UUID menteeId) {
         Optional<Mentoring> mentoringOptional = mentoringRepository.findByMentorIdAndMenteeId(mentorId, menteeId);
         Mentoring mentoring = mentoringOptional.get();
@@ -55,14 +55,14 @@ public class MentoringService {
     }
 
     public List<Member> getMenteesForMentor(UUID mentorId) {
-        List<Mentoring> mentorings = mentoringRepository.findByMentorId(mentorId);
+        List<Mentoring> mentorings = mentoringRepository.findMenteesByMentorId(mentorId);
         return mentorings.stream()
                 .map(Mentoring::getMentee)
                 .collect(Collectors.toList());
     }
 
     public List<Member> getMentorsForMentee(UUID menteeId) {
-        List<Mentoring> mentorings = mentoringRepository.findByMenteeId(menteeId);
+        List<Mentoring> mentorings = mentoringRepository.findMentorsByMenteeId(menteeId);
         return mentorings.stream()
                 .map(Mentoring::getMentor)
                 .collect(Collectors.toList());
