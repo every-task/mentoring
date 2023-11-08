@@ -2,11 +2,15 @@ package com.playdata.message.service;
 
 import com.playdata.domain.member.entity.Member;
 import com.playdata.domain.member.repository.MemberRepository;
+import com.playdata.domain.mentoring.entity.Mentoring;
+import com.playdata.domain.mentoring.entity.MentoringStatus;
+import com.playdata.domain.mentoring.repository.MentoringRepository;
 import com.playdata.domain.message.dto.MessageDto;
 import com.playdata.domain.message.entity.Message;
 import com.playdata.domain.message.repository.MessageRepository;
 import com.playdata.exception.MemberNotFoundException;
 import com.playdata.exception.MessageNotFoundException;
+import com.playdata.exception.StatusNotACCEPTEDException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -22,13 +27,17 @@ import java.util.UUID;
 public class MessageService {
     private final MessageRepository messageRepository;
     private final MemberRepository memberRepository;
+    private final MentoringRepository mentoringRepository;
 
     //쪽지 보내기
     public MessageDto sendMessage(MessageDto messageDto, UUID senderId) {
+
         Member sender = memberRepository.findById(senderId)
                 .orElseThrow(() -> new MemberNotFoundException("Member not found"));
         Member receiver = memberRepository.findByNickname(messageDto.getReceiverNickname());
 
+        Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(senderId, receiver.getId());
+        if (existRequest.isPresent() && existRequest.get().getStatus() == MentoringStatus.ACCEPTED) {
             Message messages = Message.builder()
                     .sender(sender)
                     .receiver(receiver)
@@ -37,7 +46,10 @@ public class MessageService {
                     .build();
             messageRepository.save(messages);
             return MessageDto.toDto(messages);
+        }else {
+            throw new StatusNotACCEPTEDException("Status is not ACCEPTED");
         }
+    }
 
     // 받은 쪽지함 불러오기
     // 한 명의 유저가 받은 모든 쪽지
@@ -99,8 +111,5 @@ public class MessageService {
             }
             return "deleteBySender";
         } return null;
-
     }
-
 }
-
