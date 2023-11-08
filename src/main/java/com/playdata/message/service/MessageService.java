@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -32,6 +33,7 @@ public class MessageService {
                     .sender(sender)
                     .receiver(receiver)
                     .message(messageDto.getMessage())
+                    .sentAt(LocalDateTime.now())
                     .build();
             messageRepository.save(messages);
             return MessageDto.toDto(messages);

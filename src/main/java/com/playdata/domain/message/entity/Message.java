@@ -48,10 +48,11 @@ public class Message {
     }
 
     @Builder
-    public Message(Member sender, Member receiver, String message ) {
+    public Message(Member sender, Member receiver, String message, LocalDateTime sentAt ) {
         this.sender = sender;
         this.receiver = receiver;
         this.message = message;
+        this.sentAt = sentAt;
 
     }
 }
