@@ -14,12 +14,12 @@ import java.util.UUID;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/v1/message")
+@RequestMapping("/api/v1/mentoring")
 public class MessageController {
 
     private final MessageService messageService;
 
-    @PostMapping("/send")
+    @PostMapping("/message/send")
     public ResponseEntity<MessageDto> sendMessage(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                   @RequestBody MessageDto messageDto) {
 
@@ -27,7 +27,7 @@ public class MessageController {
         return ResponseEntity.ok(sentMessage);
     }
 
-    @GetMapping("/list-received")
+    @GetMapping("/message/list-received")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<MessageDto>> receivedMessages(@AuthenticationPrincipal TokenInfo tokenInfo) {
         UUID receiverId = tokenInfo.getId();
@@ -35,7 +35,7 @@ public class MessageController {
         return ResponseEntity.ok(receivedMessages);
     }
 
-    @DeleteMapping("/received/{id}")
+    @DeleteMapping("/message/received/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> deleteReceivedMessage(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                         @PathVariable Long id) {
@@ -44,7 +44,7 @@ public class MessageController {
         return ResponseEntity.ok("Received message deleted");
     }
 
-    @GetMapping("/list-sent")
+    @GetMapping("/message/list-sent")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<List<MessageDto>> sentMessages(@AuthenticationPrincipal TokenInfo tokenInfo) {
         UUID senderId = tokenInfo.getId();
@@ -52,7 +52,7 @@ public class MessageController {
         return ResponseEntity.ok(sentMessages);
     }
 
-    @DeleteMapping("/sent/{id}")
+    @DeleteMapping("/message/sent/{id}")
     @ResponseStatus(HttpStatus.OK)
     public ResponseEntity<String> deleteSentMessage(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                     @PathVariable Long id) {
