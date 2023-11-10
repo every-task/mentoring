@@ -4,12 +4,10 @@ import com.playdata.domain.message.entity.Message;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
 
 @AllArgsConstructor
-@NoArgsConstructor
 @Getter
 public class MessageDto {
 
@@ -17,7 +15,6 @@ public class MessageDto {
     private String senderNickname;
     private String receiverNickname;
     private LocalDateTime sentAt;
-
 
     public static MessageDto toDto(Message message) {
         return new MessageDto(
