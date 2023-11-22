@@ -6,9 +6,11 @@ import com.playdata.domain.mentoring.entity.Mentoring;
 import com.playdata.domain.mentoring.entity.MentoringStatus;
 import com.playdata.domain.mentoring.repository.MentoringRepository;
 import com.playdata.exception.MemberNotFoundException;
+import com.playdata.exception.MentoringIdNotFoundException;
 import com.playdata.exception.MentoringRequestNotAllowedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -45,6 +47,16 @@ public class MentoringService {
         mentoring.setStatus(MentoringStatus.ACCEPTED);
         mentoringRepository.save(mentoring);
     }
+
+    // 멘티를 차단한다
+    public void blockMentee(UUID mentorId, UUID menteeId) {
+        Optional<Mentoring> mentoringOptional = mentoringRepository.findByMentorIdAndMenteeId(mentorId, menteeId);
+        Mentoring mentoring = mentoringOptional.get();
+            mentoring.setStatus(MentoringStatus.BLOCKED);
+            mentoringRepository.save(mentoring);
+        }
+
+
 
     //멘토링 요청을 거절한다
     public void rejectRequest(UUID mentorId, UUID menteeId) {
