@@ -57,20 +57,28 @@ public class MentoringService {
     public List<Member> getMenteesForMentor(UUID mentorId) {
         List<Mentoring> mentorings = mentoringRepository.findMenteesByMentorId(mentorId);
         return mentorings.stream()
-                .map(Mentoring::getMentee)
+                .map(mentoring -> {
+                    Member mentee = mentoring.getMentee();
+                    mentee.setStatus(mentoring.getStatus());
+                    return mentee;
+                })
                 .collect(Collectors.toList());
     }
 
     public List<Member> getMentorsForMentee(UUID menteeId) {
         List<Mentoring> mentorings = mentoringRepository.findMentorsByMenteeId(menteeId);
         return mentorings.stream()
-                .map(Mentoring::getMentor)
+                .map(mentoring -> {
+                    Member mentor = mentoring.getMentor();
+                    mentor.setStatus(mentoring.getStatus());
+                    return mentor;
+                })
                 .collect(Collectors.toList());
     }
 
 
     private Member findMemberById(UUID memberId) {
         return memberRepository.findById(memberId)
-                .orElseThrow(() -> new MemberNotFoundException("Member not found"));
+                .orElseThrow(() -> new MemberNotFoundException("Member by memberId not found"));
     }
 }
