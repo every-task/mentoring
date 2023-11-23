@@ -2,7 +2,7 @@ package com.playdata.mentoring.controller;
 
 import com.playdata.config.TokenInfo;
 import com.playdata.domain.member.entity.Member;
-import com.playdata.domain.mentoring.response.MentoringRequest;
+import com.playdata.domain.mentoring.request.MentoringRequest;
 import com.playdata.mentoring.service.MentoringService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -34,6 +34,13 @@ public class MentoringController {
         mentoringService.acceptRequest(
                 tokenInfo.getId(), UUID.fromString(request.getMenteeId()));
     }
+    @PostMapping("/block")
+    public void blockMenteeRequest(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                   @RequestBody MentoringRequest request) {
+        mentoringService.blockMentee(
+                tokenInfo.getId(), UUID.fromString(request.getMenteeId()));
+    }
+
 
     // 멘토링 요청 거절
     @PostMapping("/reject")
