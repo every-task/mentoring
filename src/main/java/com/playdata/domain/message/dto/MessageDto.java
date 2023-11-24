@@ -11,6 +11,7 @@ import java.time.LocalDateTime;
 @Getter
 public class MessageDto {
 
+    private Long id;
     private String message;
     private String senderNickname;
     private String receiverNickname;
@@ -18,6 +19,7 @@ public class MessageDto {
 
     public static MessageDto toDto(Message message) {
         return new MessageDto(
+                message.getId(),
                 message.getMessage(),
                 message.getSender().getNickname(),
                 message.getReceiver().getNickname(),
