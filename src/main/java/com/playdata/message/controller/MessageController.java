@@ -19,12 +19,20 @@ public class MessageController {
 
     private final MessageService messageService;
 
-    @PostMapping("/message/send")
+    @PostMapping("/message/sendmentee")
     @ResponseStatus(HttpStatus.CREATED)
-    public MessageDto sendMessage(@AuthenticationPrincipal TokenInfo tokenInfo,
+    public MessageDto sendMenteeMessage(@AuthenticationPrincipal TokenInfo tokenInfo,
                                                   @RequestBody MessageDto messageDto) {
 
-        MessageDto sentMessage = messageService.sendMessage(messageDto, tokenInfo.getId());
+        MessageDto sentMessage = messageService.sendMenteeMessage(messageDto, tokenInfo.getId());
+        return sentMessage;
+    }
+    @PostMapping("/message/sendmentor")
+    @ResponseStatus(HttpStatus.CREATED)
+    public MessageDto sendMentorMessage(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                  @RequestBody MessageDto messageDto) {
+
+        MessageDto sentMessage = messageService.sendMentorMessage(messageDto, tokenInfo.getId());
         return sentMessage;
     }
 

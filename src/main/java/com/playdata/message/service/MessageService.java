@@ -30,15 +30,19 @@ public class MessageService {
     private final MemberRepository memberRepository;
     private final MentoringRepository mentoringRepository;
 
-    //쪽지 보내기
-    public MessageDto sendMessage(MessageDto messageDto, UUID senderId) {
+    //멘티에게 쪽지 보내기
+    public MessageDto sendMenteeMessage(MessageDto messageDto, UUID senderId) {
 
         Member sender = memberRepository.findById(senderId)
                 .orElseThrow(() -> new MemberNotFoundException("Member by senderId not found"));
         Member receiver = memberRepository.findByNickname(messageDto.getReceiverNickname());
 
             Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(senderId, receiver.getId());
-            boolean isMentoringAccepted = existRequest.map(
+        Mentoring mentoring = existRequest.orElseThrow(() -> new RuntimeException("not found"));
+
+        System.out.println(mentoring);
+
+        boolean isMentoringAccepted = existRequest.map(
                             request -> request.getStatus() == MentoringStatus.ACCEPTED)
                     .orElse(false);
 
@@ -54,6 +58,33 @@ public class MessageService {
             messageRepository.save(messages);
             return MessageDto.toDto(messages);
         }
+    //멘토에게 쪽지보내기
+    public MessageDto sendMentorMessage(MessageDto messageDto, UUID senderId) {
+
+        Member sender = memberRepository.findById(senderId)
+                .orElseThrow(() -> new MemberNotFoundException("Member by senderId not found"));
+        Member receiver = memberRepository.findByNickname(messageDto.getReceiverNickname());
+
+        Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(receiver.getId(),senderId );
+        Mentoring mentoring = existRequest.orElseThrow(() -> new RuntimeException("not found"));
+
+        boolean isMentoringAccepted = existRequest.map(
+                        request -> request.getStatus() == MentoringStatus.ACCEPTED)
+                .orElse(false);
+
+        if (!isMentoringAccepted) {
+            throw new StatusNotAcceptedException("Mentoring status is not ACCEPTED");
+        }
+        Message messages = Message.builder()
+                .sender(sender)
+                .receiver(receiver)
+                .message(messageDto.getMessage())
+                .sentAt(LocalDateTime.now())
+                .build();
+        messageRepository.save(messages);
+        return MessageDto.toDto(messages);
+    }
+
 
 
 
