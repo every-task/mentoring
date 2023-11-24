@@ -37,23 +37,24 @@ public class MessageService {
                 .orElseThrow(() -> new MemberNotFoundException("Member by senderId not found"));
         Member receiver = memberRepository.findByNickname(messageDto.getReceiverNickname());
 
-        Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(senderId, receiver.getId());
-        boolean isMentoringAccepted = existRequest.map(
-                        request -> request.getStatus() == MentoringStatus.ACCEPTED)
-                .orElse(false);
+            Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(senderId, receiver.getId());
+            boolean isMentoringAccepted = existRequest.map(
+                            request -> request.getStatus() == MentoringStatus.ACCEPTED)
+                    .orElse(false);
 
-        if (!isMentoringAccepted) {
-            throw new StatusNotAcceptedException("Mentoring status is not ACCEPTED");
+            if (!isMentoringAccepted) {
+                throw new StatusNotAcceptedException("Mentoring status is not ACCEPTED");
+            }
+            Message messages = Message.builder()
+                    .sender(sender)
+                    .receiver(receiver)
+                    .message(messageDto.getMessage())
+                    .sentAt(LocalDateTime.now())
+                    .build();
+            messageRepository.save(messages);
+            return MessageDto.toDto(messages);
         }
-        Message messages = Message.builder()
-                .sender(sender)
-                .receiver(receiver)
-                .message(messageDto.getMessage())
-                .sentAt(LocalDateTime.now())
-                .build();
-        messageRepository.save(messages);
-        return MessageDto.toDto(messages);
-    }
+
 
 
     // 받은 쪽지함 불러오기
@@ -76,7 +77,7 @@ public class MessageService {
             throw new MessageNotFoundException("Message by receiverId not found");
         });
 
-        if (receiverId.equals(message.getReceiver())) {
+        if (receiverId.equals(message.getReceiver().getId())) {
             message.deleteByReceiver(); // 받은 사람의 쪽지함에서 쪽지 삭제
             if (message.deleted()) { // 양쪽 다 쪽지가 삭제됐으면 db에서 삭제
                 messageRepository.delete(message);
@@ -109,7 +110,7 @@ public class MessageService {
                 new MessageNotFoundException("Message by senderId not found"));
 
 
-        if (senderId.equals(message.getSender())) {
+        if (senderId.equals(message.getSender().getId())) {
             message.deleteBySender(); // 보낸사람의 쪽지함에서 쪽지 삭제
             if (message.deleted()) { // 양쪽 다 쪽지가 삭제됐으면 db에서 삭제
                 messageRepository.delete(message);
