@@ -2,13 +2,16 @@ package com.playdata.config;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
 @Service
 public class JwtService {
-    private final String secretKey = "anfoawhfafawkefhbwkjlfeopwehfolawefh";
+
+    @Value("${config.jwt.secret}")
+    private String secretKey;
 
 
     public TokenInfo parseToken(String token){
@@ -26,4 +29,3 @@ public class JwtService {
                 .build();
     }
 }
-
