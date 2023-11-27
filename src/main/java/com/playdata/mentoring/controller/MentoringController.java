@@ -2,9 +2,13 @@ package com.playdata.mentoring.controller;
 
 import com.playdata.config.TokenInfo;
 import com.playdata.domain.member.entity.Member;
-import com.playdata.domain.mentoring.request.MentoringRequest;
+
+import com.playdata.domain.mentoring.entity.Mentoring;
+import com.playdata.domain.mentoring.entity.MentoringStatus;
+import com.playdata.domain.mentoring.response.MentoringRequest;
 import com.playdata.mentoring.service.MentoringService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,10 +25,12 @@ public class MentoringController {
 
     // 멘토링 요청 보내기
     @PostMapping("/request")
-    public void sendMentoringRequest(@AuthenticationPrincipal TokenInfo tokenInfo,
-                                     @RequestBody MentoringRequest request) {
-        mentoringService.sendRequest(
+    public ResponseEntity<MentoringStatus> sendMentoringRequest(@AuthenticationPrincipal TokenInfo tokenInfo,
+                                                                @RequestBody MentoringRequest request) {
+        MentoringStatus status = mentoringService.sendRequest(
                 tokenInfo.getId(), UUID.fromString(request.getMentorId()));
+
+        return ResponseEntity.ok(status);
     }
 
     // 멘토링 요청 수락
