@@ -10,6 +10,8 @@ spring:
       ddl-auto: update
     show-sql: true
 
+
+
   kafka:
     consumer:
       auto-offset-reset: latest
@@ -19,5 +21,12 @@ spring:
       properties:
         spring.json.trusted.packages: "*"
     bootstrap-servers: localhost:9092
+
+config:
+  client:
+    origin: http://localhost:3000
+  jwt:
+    secret: anfoawhfafawkefhbwkjlfeopwehfolawefh
+
 server:
   port: 8080
