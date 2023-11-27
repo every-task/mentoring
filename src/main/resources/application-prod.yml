@@ -1,0 +1,29 @@
+spring:
+  datasource:
+    url: jdbc:mysql://10.128.0.12:3306/mentoring?serverTimezone=Asia/Seoul
+    username: ity
+    password: 1234
+
+  jpa:
+    hibernate:
+      ddl-auto: none
+
+  kafka:
+    consumer:
+      auto-offset-reset: latest
+      group-id: mentoring
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.ByteArrayDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+    bootstrap-servers: 10.128.0.12:9092
+
+config:
+  client:
+    origin: ${DOMAIN_IP}
+  jwt:
+    secret: ${JWT_SECRET}
+
+
+server:
+  port: 8080
