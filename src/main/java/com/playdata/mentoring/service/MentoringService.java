@@ -6,11 +6,9 @@ import com.playdata.domain.mentoring.entity.Mentoring;
 import com.playdata.domain.mentoring.entity.MentoringStatus;
 import com.playdata.domain.mentoring.repository.MentoringRepository;
 import com.playdata.exception.MemberNotFoundException;
-import com.playdata.exception.MentoringIdNotFoundException;
 import com.playdata.exception.MentoringRequestNotAllowedException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,19 +24,22 @@ public class MentoringService {
     private final MemberRepository memberRepository;
 
 
-    public void sendRequest(UUID menteeId, UUID mentorId) {
+    public MentoringStatus  sendRequest (UUID menteeId, UUID mentorId) {
 
-        Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(menteeId, mentorId);
+        Optional<Mentoring> existRequest = mentoringRepository.findByMentorIdAndMenteeId(mentorId,menteeId );
         if (existRequest.isPresent()) {
-            throw new MentoringRequestNotAllowedException("Mentoring request already exists.");
+            return existRequest.get().getStatus();
         }
-            Mentoring mentoring = Mentoring.builder()
+             Mentoring mentoring = Mentoring.builder()
+                     .mentor(findMemberById(mentorId))
                     .mentee(findMemberById(menteeId))
-                    .mentor(findMemberById(mentorId))
                     .status(MentoringStatus.PENDING)
                     .build();
             mentoringRepository.save(mentoring);
+
+        return mentoring.getStatus();
         }
+
 
     // 멘토링 요청을 수락한다
     public void acceptRequest(UUID mentorId, UUID menteeId) {
